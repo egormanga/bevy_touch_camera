@@ -90,7 +90,7 @@ fn setup(
         error!("TouchCameraPlugin found no camera to use. Please attach the TouchCameraTag to a camera manually or create a camera before the PostUpdate schedule");
         return;
     }
-    match camera_query.get_single() {
+    match camera_query.single() {
         Ok(camera) => {
             info!("TouchCameraPlugin initialized: using main camera");
             commands.entity(camera).insert(TouchCameraTag);
@@ -101,12 +101,16 @@ fn setup(
 
 fn touch_pan_zoom(
     touches_res: Res<Touches>,
-    mut camera_q: Query<(&mut Transform, &mut OrthographicProjection), With<TouchCameraTag>>,
+    mut camera_q: Query<(&mut Transform, &mut Projection), With<TouchCameraTag>>,
     mut tracker: ResMut<TouchTracker>,
     config: Res<TouchCameraConfig>,
     time: Res<Time>,
 ) {
-    let Ok((mut transform, mut projection)) = camera_q.get_single_mut() else {
+    let Ok((mut transform, mut projection)) = camera_q.single_mut() else {
+        return;
+    };
+
+    let Projection::Orthographic(projection) = &mut *projection else {
         return;
     };
 
@@ -165,10 +169,10 @@ fn touch_pan_zoom(
     {
         if tracker.gesture_type == GestureType::None {
             tracker.camera_start_pos = transform.translation;
-            tracker.time_start_touch = time.elapsed_seconds();
+            tracker.time_start_touch = time.elapsed_secs();
         }
         tracker.gesture_type = GestureType::Pan;
-        let time_since_start = time.elapsed_seconds() - tracker.time_start_touch;
+        let time_since_start = time.elapsed_secs() - tracker.time_start_touch;
         if time_since_start < config.touch_time_min {
             return;
         }
