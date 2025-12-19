@@ -40,8 +40,9 @@ The plugin will try to attach itself to a camera. This can be done in either one
 ## 🔗 Bevy compatibility
 | bevy_touch_camera | bevy |
 |-------------------|------|
-| 0.1               | 0.11 |
+| 0.1.3             | 0.17 |
 | 0.1.2             | 0.12 |
+| 0.1               | 0.11 |
 
 ## 🪪 License
 Either one:
